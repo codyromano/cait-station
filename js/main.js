@@ -273,12 +273,12 @@
     },
 
     handleUrlChange: function () {
-      var validTabs = ['cheats','controller','power-ups'];
+      var validTabs = ['controller','power-ups'];
       var tabId = Router.getCurrentHash();
 
       // Fall back to default tab if hash is missing or invalid
       if (validTabs.indexOf(tabId) === -1) {
-        tabId = 'cheats';
+        tabId = 'controller';
       }
 
       PubSub.publish('tabRequested', tabId);
@@ -299,7 +299,6 @@
 
   var TabsList = [
     '#controller',
-    '#cheats',
     '#power-ups'
   ];
 
@@ -327,7 +326,7 @@
       if (this.isValidTab(tabId)) {
         tab = UI(tabId);
       } else {
-        tab = UI('#cheats');
+        tab = UI('#controller');
       }
       this.getAllTabs().forEach(LayoutManager.hideTab);
       tab.classList.add('tab-active'); 

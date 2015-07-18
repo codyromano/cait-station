@@ -44,36 +44,6 @@ p {
   display: block;
 }
 
-.info-box-wrapper {
-  position: absolute;
-  left: 3%;
-  height: 100%;
-  z-index: 1;
-}
-
-.info-box {
-  display: none;
-  position: relative;
-  background-color: #ccc;
-  width: 300px;
-  margin-left: -500px;
-  text-align: left;
-  border-radius: 10px;
-  padding: 30px 10px;
-  border: solid #000 10px;
-  border-top: solid #111 9em;
-  border-radius: 25px;
-}
-
-.info-box h1 {
-  font-size: 4em;
-  position: absolute;
-  top: -2.25em;
-  display: block;
-  width: 100%;
-  color: #fff;
-}
-
 .top-menu {
   background-image: radial-gradient(ellipse farthest-corner at 100px 100px , #eee 0%, rgba(0, 0, 0, 0) 0%, #eee 95%);
 }
@@ -83,6 +53,7 @@ p {
   font-size: 2.25em;
   cursor: pointer;
   width: 33.333%;
+  width: 50%;
   display: block;
   float: left;
   text-align: center;
@@ -119,16 +90,23 @@ p {
   vertical-align: middle;
 }
 
-
-
-.sprite {
-  background-image: url(../images/sprite.png);
-  background-repeat: no-repeat;
+.valign-inner {
+  display: inline-block;
+  width: 950px;
 }
 
-.centered {
-  margin-left: auto;
-  margin-right: auto;
+
+.side-bar, .controller-wrapper {
+  display: block;
+  float: left;
+}
+
+.controller-wrapper {
+  margin-left: 25px;
+}
+
+.side-bar {
+  width: 300px;
 }
 
 .controller {
@@ -136,21 +114,102 @@ p {
   width: 560px;
   height: 400px;
   background-position: -25px 0px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.button-x, .button-triangle, 
-.button-square, .button-circle {
-  position: absolute;
+.sprite {
+  background-image: url(../images/sprite.png);
+  background-repeat: no-repeat;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[class*='button-'] {
   height: 40px;
   width: 40px;
   cursor: pointer;
   transition: top ease .25s;
 }
 
+.controller [class*='button-'] {
+  position: absolute;
+}
+
+.cheats-wrapper {
+  overflow: auto;
+  max-height: 300px;
+  border: solid #000 .5em;
+  border-radius: 1em;
+}
+
+.cheat-row {
+    padding: .25em 0px;
+    background: #eee;
+}
+
+.cheat-row h2 {
+  font-family: Tahoma;
+  font-size: 1em;
+}
+
+.cheat-row:nth-of-type(odd) {
+  background: #ccc;
+}
+
+.cheat-row [class*='button-'] {
+  display: inline-block;
+  cursor: default;
+}
+
+.cheat-row.cheat-heading {
+  background-color: #eee;
+  color: #000;
+}
+
+.cheat-heading h2 {
+  font-family: Playstation;
+  font-size: 1.75em;
+  padding-bottom: .5em;
+}
+
 .button-circle {
   background-position: -607px -105px;
   top: 120px;
   left: 455px;
+}
+
+.timer-wrapper {
+  height: 8px;
+  width: 300px;
+  margin: 5% auto 0px auto;
+  text-align: center;
+  color: #fff;
+}
+
+.timer-wrapper h2 {
+    font-family: Tahoma;
+    font-size: 1em;
+    text-align: center;
+}
+
+.timer {
+  display: inline-block;
+  font-size: 3em;
+  font-family: Playstation;
+  letter-spacing: .05em;
 }
 
 .button-circle:hover {
@@ -199,10 +258,29 @@ p {
   padding: .15em .5em;
 }
 
+
 .power-up-unlocked {
   background-color: #fff;
   border-color: #111;
   color: #000;
+}
+
+.content-box {
+  background-color: #eee;
+  text-align: left;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: solid #000 .5em;
+  border-radius: 1em;
+}
+
+.primary {
+  background-color: #fff;
+}
+
+.content-box h1 {
+  margin-bottom: 10px;
+  font-size: 2em;
 }
 
 .middle-content {
