@@ -65,7 +65,7 @@
       PubSub.publish('controllerKeyPressed', ev.target.dataset.button);
     }
   }, false);
-  
+
 })(window);
 
 
@@ -75,6 +75,9 @@
   var SoundLibrary = {
       'button-click' : {
         mp3: 'audio/button-click.mp3'
+      },
+      'cheat-entered' : {
+        mp3: 'audio/bonus.wav'
       }
   };
 
@@ -83,7 +86,8 @@
     if (!effect) {
       throw new Error("Effect '" + effectName + "' is not in library");
     }
-    // TODO: Choose format by browser
+    // TODO: Choose format according to browser support
+    // Not all browsers will support mp3
     return new Audio(effect.mp3);
   };
 
@@ -91,8 +95,97 @@
     getSoundEffect('button-click').play();
   });
 
+  PubSub.subscribe('cheatCodeEntered', function () {
+    getSoundEffect('cheat-entered').play();
+  });
+
 })(window, PubSub);
 
+
+(function (exports, PubSub) {
+
+  // Succession of controller buttons pushed
+  var cheatInput = '';
+
+  // How rapidly (in ms) the player must push the buttons
+  // for them to be counted as part of the same stream of input
+  var pushFreq = 3000, 
+      lastButtonPush;
+
+  var Cheats = {
+    'trianglecirclecircle' : {
+      // Cheats become available over time, so a cheat that is 
+      // available is not necessarily unlocked - and vice versa
+      available: true, 
+      unlocked: false,
+      text: "Thai Food Dinner", 
+      description: "Dinner plans"
+    },
+
+    'circlecirclesquare' : {
+      available: true, 
+      unlocked: false, 
+      text: "Movies", 
+      description: "Movie plans"
+    }
+  };
+
+  exports.getCheats = function () {
+    return Cheats;
+  };
+
+  PubSub.subscribe('cheatCodeEntered', function (cheat, allCheats, code) {
+    Cheats[code].unlocked = true;
+    // Reset the input stream
+    cheatInput = '';
+  });
+
+  PubSub.subscribe('controllerKeyPressed', function (type) {
+    var now = (new Date).getTime(); 
+
+    // If a given amount of time has passed between button pushes
+    // don't count the pushes as part of the same string. Instead, 
+    // reset the string of cheat input
+    if (typeof lastButtonPush === 'number' && now - lastButtonPush >= pushFreq) {
+      cheatInput = '';
+    }
+
+    lastButtonPush = now;
+    cheatInput+= type;
+
+    // See if the input stream of cheats matches any cheats that are still locked
+    for (var cheatCode in Cheats) {
+      if (cheatInput.indexOf(cheatCode) != -1 && Cheats[cheatCode].unlocked === false) {
+        PubSub.publish('cheatCodeEntered', Cheats[cheatCode], getCheats(), cheatCode);
+      }
+    }
+  });
+
+})(window, PubSub);
+
+(function (exports, PubSub, UI) {
+
+  PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
+    var indicator = UI('.power-up-indicator'),
+        textProp = ('textContent' in indicator) ? 'textContent' : 'innerText';
+
+    var totalUnlocked = 0;
+    for (var code in allCheats) {
+      if (allCheats[code].unlocked === true) {
+        ++totalUnlocked;
+      }
+    }
+
+    if (totalUnlocked > 0) {
+      indicator.classList.add('power-up-unlocked');
+    } else {
+      indicator.classList.remove('power-up-unlocked'); 
+    }
+
+    indicator[textProp] = totalUnlocked;
+  });
+
+})(window, PubSub, UI);
 
 (function (exports, PubSub, UI) {
   'use strict';
@@ -105,7 +198,7 @@
 
     window.setTimeout(function () {
       rootElem.removeChild(button);
-    }, 1750);
+    }, 10000);
   };
 
   PubSub.subscribe('controllerKeyPressed', function (type) {

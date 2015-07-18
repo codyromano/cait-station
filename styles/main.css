@@ -10,7 +10,7 @@
 }
 
 main {
-  min-width: 600px;
+  min-width: 650px;
 }
 
 body, html, main, .valign-wrapper {
@@ -69,6 +69,7 @@ p {
   font-size: 2.25em;
   cursor: pointer;
   width: 33.333%;
+  height: 2.75em;
   display: block;
   float: left;
   text-align: center;
@@ -172,6 +173,23 @@ p {
 
 .button-x:hover {
   top: 169px;
+}
+
+.power-up-indicator {
+  border-radius: 50%;
+  width: 1.5em;
+  padding-top: .15em;
+  padding-bottom: .15em;
+  display: inline-block;
+  transition: all ease-in .5s;
+  position: relative;
+  left: -.5em;
+  border: solid #555 .1em;
+}
+
+.power-up-unlocked {
+  background-color: #EE5C42;
+  border-color: #111;
 }
 
 .middle-content {
