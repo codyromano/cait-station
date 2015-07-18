@@ -1,3 +1,6 @@
+/**
+* @module PubSub
+*/
 (function (exports) {
   'use strict';
 
@@ -23,6 +26,9 @@
 
 })(window);
 
+/**
+* @module UI
+*/
 (function (exports) {
   'use strict';
 
@@ -68,7 +74,46 @@
 
 })(window);
 
+(function (exports, PubSub, UI) {
 
+  var TopMenu = {
+    getButtonNameByTabId: function (tabId) {
+      var result = ('#tab-' + tabId); 
+      var validNames = [
+        '#tab-controller',
+        '#tab-cheats',
+        '#tab-power-ups'
+      ];
+
+      return validNames.indexOf(result) != -1 ? result : false;
+    },
+
+    deselectButton: function (buttonName) {
+      buttonName.classList.remove('selected');
+    },
+
+    getAllButtons: function () {
+      return UI('.top-menu > a');
+    },
+
+    selectButton: function (buttonName) {
+      var button = UI(buttonName);
+      this.getAllButtons().forEach(this.deselectButton);
+      button.classList.add('selected');
+    }
+  };
+
+  PubSub.subscribe('tabRequested', function (tabId) {
+    var buttonName = TopMenu.getButtonNameByTabId(tabId);
+    if (buttonName) {
+      TopMenu.selectButton(buttonName);
+    }
+  });
+})(window, PubSub, UI);
+
+/**
+* @module SoundEffects
+*/
 (function (exports, PubSub) {
   'use strict';
 
@@ -77,7 +122,7 @@
         mp3: 'audio/button-click.mp3'
       },
       'cheat-entered' : {
-        mp3: 'audio/bonus.wav'
+        mp3: 'audio/button-click-2.mp3'
       }
   };
 
@@ -101,7 +146,9 @@
 
 })(window, PubSub);
 
-
+/**
+* @module CheatLogic
+*/
 (function (exports, PubSub) {
 
   // Succession of controller buttons pushed
@@ -163,7 +210,12 @@
 
 })(window, PubSub);
 
+/**
+* @module PowerUpIndicator
+*/
 (function (exports, PubSub, UI) {
+
+  // TODO: Refactor make this more module-like
 
   PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
     var indicator = UI('.power-up-indicator'),
@@ -187,6 +239,9 @@
 
 })(window, PubSub, UI);
 
+/** 
+* @module ButtonPressIndicator
+*/
 (function (exports, PubSub, UI) {
   'use strict';
 
@@ -207,7 +262,88 @@
 
 })(window, PubSub, UI);
 
+/** 
+* @module Router 
+*/
+(function (exports, PubSub, UI) {
 
-PubSub.subscribe('topMenuButtonPressed', function (button) {
-  console.log('pressed');
-});
+  var Router = exports.Router = {
+    getCurrentHash: function () {
+      return (document.location.hash || '').replace('#','');
+    },
+
+    handleUrlChange: function () {
+      var validTabs = ['cheats','controller','power-ups'];
+      var tabId = Router.getCurrentHash();
+
+      // Fall back to default tab if hash is missing or invalid
+      if (validTabs.indexOf(tabId) === -1) {
+        tabId = 'cheats';
+      }
+
+      PubSub.publish('tabRequested', tabId);
+    }
+  };
+
+  window.addEventListener('load', function () {
+    Router.handleUrlChange();
+  });
+  window.addEventListener('hashchange', Router.handleUrlChange);
+
+})(window, PubSub, UI);
+
+/**
+* @module LayoutManager
+*/
+(function (exports, PubSub, UI) {
+
+  var TabsList = [
+    '#controller',
+    '#cheats',
+    '#power-ups'
+  ];
+
+  var LayoutManager = exports.LayoutManager = {
+    isValidTab: function (tabId) {
+      return TabsList.indexOf(tabId) !== -1;
+    }, 
+
+    getAllTabs: function () {
+      var tabs = UI('.tab-section');
+
+      // A rudimentary check
+      var resultIsArray = (typeof tabs === 'object' && tabs.hasOwnProperty('length'));
+      return resultIsArray ? tabs : [];
+    },
+
+    hideTab: function (tab) {
+      tab.classList.remove('tab-active');
+    },
+
+    showTab: function (tabId) {
+      var tab;
+      tabId = '#' + tabId; 
+
+      if (this.isValidTab(tabId)) {
+        tab = UI(tabId);
+      } else {
+        tab = UI('#cheats');
+      }
+      this.getAllTabs().forEach(LayoutManager.hideTab);
+      tab.classList.add('tab-active'); 
+    }
+  };
+
+  PubSub.subscribe('tabRequested', function (tabId) {
+    LayoutManager.showTab(tabId);
+  });
+
+  PubSub.subscribe('topMenuButtonPressed', function (button) {
+    PubSub.publish('tabReqested', button);
+  });
+
+})(window, PubSub, UI);
+
+
+
+

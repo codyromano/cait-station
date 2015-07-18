@@ -9,12 +9,16 @@
 <main>
 
   <menu class="top-menu">
-    <menuitem class="selected">Controller</menuitem>
-    <menuitem>Cheat Codes</menuitem>
-    <menuitem><span class="power-up-indicator">0</span> Power-ups</menuitem>
+    <a href="#cheats" id="tab-cheats">Cheat Codes</a>
+    <a href="#controller" id="tab-controller">Controller</a>
+    <a href="#power-ups" id="tab-power-ups">
+      <span class="power-up-indicator">0</span>
+      <span class="power-up-text">Power-ups
+    </a>
     <div class="clearfix"></div>
   </menu>
 
+  <!--
   <div class="info-box-wrapper">
     <div class="valign-wrapper body-content">
       <div class="valign-content">
@@ -27,18 +31,37 @@
       </div>
     </div>
   </div>
+  -->
 
-  <div class="valign-wrapper body-content">
-    <div class="valign-content">
-      <div class="sprite centered controller">
-        <div data-button="x" class="sprite button-x"></div>
-        <div data-button="triangle" class="sprite button-triangle"></div>
-        <div data-button="square" class="sprite button-square"></div>
-        <div data-button="circle" class="sprite button-circle"></div>
-      </div>
+  <section class="body-content tab-section" id="cheats">
+    <h1>Cheats</h1>
+  </section>
 
-      <div id="root">
-      </div>
+
+
+
+      <section class="tab-section" id="power-ups">
+        <h1>Power-ups</h1>
+      </section>
+
+      <section class="tab-section" id="controller">
+
+        <div class="valign-wrapper body-content">
+          <div class="valign-content">
+
+            <div class="sprite centered controller">
+              <div data-button="x" class="sprite button-x"></div>
+              <div data-button="triangle" class="sprite button-triangle"></div>
+              <div data-button="square" class="sprite button-square"></div>
+              <div data-button="circle" class="sprite button-circle"></div>
+            </div>
+
+            <div id="root"></div>
+          </div>
+        </div>
+        
+      </section>
+
     </div>
   </div>
 

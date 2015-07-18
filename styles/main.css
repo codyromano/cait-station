@@ -10,7 +10,7 @@
 }
 
 main {
-  min-width: 650px;
+  min-width: 750px;
 }
 
 body, html, main, .valign-wrapper {
@@ -26,8 +26,22 @@ h1, h2, h3, h4, h5 {
   font-family: Playstation;
 }
 
+a {
+  text-decoration: none;
+  color: #000;
+}
+
 p {
   line-height: 150%;
+}
+
+.tab-section {
+  display: none;
+  height: 80%;
+}
+
+.tab-active {
+  display: block;
 }
 
 .info-box-wrapper {
@@ -64,28 +78,28 @@ p {
   background-image: radial-gradient(ellipse farthest-corner at 100px 100px , #eee 0%, rgba(0, 0, 0, 0) 0%, #eee 95%);
 }
 
-.top-menu menuitem {
+.top-menu > a {
   font-family: Playstation;
   font-size: 2.25em;
   cursor: pointer;
   width: 33.333%;
-  height: 2.75em;
   display: block;
   float: left;
   text-align: center;
   padding: .5em 0;
+
   border-bottom: solid #000 15px;
+  border-right: solid #000 1px;
   transition: all ease .15s;
   -webkit-transition: all ease .15s;
   -moz-transition: all ease .15s;
-  border-right: solid #000 1px;
 }
 
-.top-menu menuitem:hover {
+.top-menu a:hover {
   background-color: rgba(88,88,88,.2);
 }
 
-.top-menu menuitem.selected {
+.top-menu a.selected {
   background-color: rgba(000,000,000,.5);
   color: #fff;
 }
@@ -105,9 +119,7 @@ p {
   vertical-align: middle;
 }
 
-.body-content {
-  height: 80%;
-}
+
 
 .sprite {
   background-image: url(../images/sprite.png);
@@ -178,18 +190,19 @@ p {
 .power-up-indicator {
   border-radius: 50%;
   width: 1.5em;
-  padding-top: .15em;
-  padding-bottom: .15em;
-  display: inline-block;
+
   transition: all ease-in .5s;
   position: relative;
   left: -.5em;
   border: solid #555 .1em;
+  color: #555;
+  padding: .15em .5em;
 }
 
 .power-up-unlocked {
-  background-color: #EE5C42;
+  background-color: #fff;
   border-color: #111;
+  color: #000;
 }
 
 .middle-content {
