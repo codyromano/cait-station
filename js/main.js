@@ -168,6 +168,7 @@
       available: true,
       dateAvailable: "July 24, 2015 12:00:00",
       title: "Spice Attack",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
     },
     {
@@ -175,8 +176,54 @@
       unlocked: false, 
       available: true,
       dateAvailable: "July 24, 2015 12:00:00",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       title: "Epic Sports",
       description: "Testing"
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epicd Sports",
+      description: "Testing",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epsic Sports",
+      description: "Testing",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epiadc Sports",
+      description: "Testing",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epicd Spdforts",
+      description: "Testing",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epsic Spoddrts",
+      description: "Testing",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
     }
   ];
 
@@ -187,7 +234,12 @@
   };
 
   CheatLogic.getCheats = function () {
-    return Cheats;
+    return Cheats.map(function (cheat) {
+      if (cheat.unlocked === false) {
+        cheat.description = 'Unlock this cheat to see its content';
+      }
+      return cheat;
+    });
   };
 
   CheatLogic.unlock = function (title) {
@@ -202,7 +254,7 @@
   CheatLogic.getCheatFromInput = function (inputStr) {
     var matchingCheats = Cheats.filter(function (cheat) {
       var codeStr = cheat.code.join('');
-      return (inputStr.indexOf(codeStr) != -1 && cheat.unlocked === false);
+      return (inputStr.indexOf(codeStr) != -1 && cheat.available === true && cheat.unlocked === false);
     });
 
     return (matchingCheats.length > 0) ? matchingCheats[0] : false;
@@ -290,6 +342,29 @@
   PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
     var unlocked = CheatLogic.getTotalUnlocked();
     PowerUpIndicator.setCounter(unlocked);
+  });
+
+})(window, PubSub, UI, CheatLogic);
+
+/**
+* @Module PowerUpTile 
+*/
+(function (exports, PubSub, UI, CheatLogic) {
+
+  // DOM element containing all power-up tiles
+  var tiles = UI("#power-up-tile-wrapper"),
+      temp = UI("#temp-power-up-row");
+
+  function showAvailablePowerups () {
+    var template = Handlebars.compile(temp.innerHTML),
+    html = template({cheats: CheatLogic.getCheats()});
+    tiles.innerHTML = html;
+  }
+
+  PubSub.subscribe('tabWillLoad', function (tab) {
+    if (tab === 'power-ups') {
+      showAvailablePowerups();
+    }
   });
 
 })(window, PubSub, UI, CheatLogic);

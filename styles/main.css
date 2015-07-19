@@ -48,15 +48,17 @@
   background: url(https://pixabay.com/static/uploads/photo/2013/04/01/09/02/read-only-98443_640.png) no-repeat;
   background-size: contain;
   height: 15em;
-  padding: 1em;
+  padding: 1em 2em;
 }
 
 .power-up-tile h2, .power-up-tile p {
   display: none;
 }
 
-.power-up-unlocked {
-
+.power-up-tile.unlocked * {
+  display: block;
+  background-color: rgba(255,255,255,.5);
+  padding: .15em;
 }
 
 
@@ -309,7 +311,6 @@ p {
   color: #555;
   padding: .15em .5em;
 }
-
 
 .power-up-unlocked {
   background-color: #fff;

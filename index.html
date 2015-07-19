@@ -18,8 +18,9 @@
   </menu>
 
   <section class="tab-section container" id="power-ups">
+    <div class="row" id="power-up-tile-wrapper">
 
-    <div class="row">
+      <!--
       <div class="power-up-tile grid-3 unlocked">
         <h2>Spice Attack</h2>
         <p>Dinner at Revel at 555 Test St., WA.</p>
@@ -29,20 +30,8 @@
         <h2>Spice Attack</h2>
         <p>Dinner at Revel at 555 Test St., WA.</p>
       </div>
-
-      <div class="power-up-tile grid-3">
-        <h2>Spice Attack</h2>
-        <p>Dinner at Revel at 555 Test St., WA.</p>
-      </div>
-
-      <div class="power-up-tile grid-3">
-        <h2>Spice Attack</h2>
-        <p>Dinner at Revel at 555 Test St., WA.</p>
-      </div>
+      -->
     </div>
-
-
-
   </section>
 
   <section class="tab-section" id="controller">
@@ -67,7 +56,6 @@
               </div>
 
               <div id="cheat-rows-wrapper"></div>
-
             </div>
           </div>
 
@@ -100,6 +88,7 @@
 
 </main>
 
+
 <script type="text/template" id="temp-cheat-row">
 {{#each cheats}}
 <div class="cheat-row">
@@ -108,6 +97,19 @@
   {{#each code}}
     <div class="sprite button-{{this}}"></div>
   {{/each}}
+</div>
+{{/each}}
+</script>
+
+<script type="text/template" id="temp-power-up-row">
+{{#each cheats}}
+  {{#if unlocked}}
+    <div class="power-up-tile unlocked grid-3" style="background-image:url({{image}});background-size:cover;">
+  {{else}}
+    <div class="power-up-tile grid-3">
+  {{/if}}
+  <h2>{{title}}</h2>
+  <p>{{about}}</p>
 </div>
 {{/each}}
 </script>
