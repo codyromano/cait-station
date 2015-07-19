@@ -151,6 +151,8 @@
 */
 (function (exports, PubSub) {
 
+  var CheatLogic = exports.CheatLogic = {};
+
   // Succession of controller buttons pushed
   var cheatInput = '';
 
@@ -159,30 +161,57 @@
   var pushFreq = 3000, 
       lastButtonPush;
 
-  var Cheats = {
-    'trianglecirclecircle' : {
-      // Cheats become available over time, so a cheat that is 
-      // available is not necessarily unlocked - and vice versa
-      available: true, 
-      unlocked: false,
-      text: "Thai Food Dinner", 
-      description: "Dinner plans"
-    },
-
-    'circlecirclesquare' : {
-      available: true, 
+  var Cheats = [
+    {
+      code: ["triangle","circle","circle"],
       unlocked: false, 
-      text: "Movies", 
-      description: "Movie plans"
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Spice Attack",
+      description: "Dinner at Revel restaurant, WA"
+    },
+    {
+      code: ["circle","circle","square"],
+      unlocked: false, 
+      available: true,
+      dateAvailable: "July 24, 2015 12:00:00",
+      title: "Epic Sports",
+      description: "Testing"
     }
+  ];
+
+  CheatLogic.getTotalUnlocked = function () {
+    return Cheats.filter(function (cheat) {
+      return (cheat.unlocked === true);
+    }).length;
   };
 
-  exports.getCheats = function () {
+  CheatLogic.getCheats = function () {
     return Cheats;
   };
 
+  CheatLogic.unlock = function (title) {
+    Cheats = Cheats.map(function (c) {
+      if (c.title === title) {
+        c.unlocked = true;
+      }
+      return c;
+    });
+  };
+
+  CheatLogic.getCheatFromInput = function (inputStr) {
+    var matchingCheats = Cheats.filter(function (cheat) {
+      var codeStr = cheat.code.join('');
+      return (inputStr.indexOf(codeStr) != -1 && cheat.unlocked === false);
+    });
+
+    return (matchingCheats.length > 0) ? matchingCheats[0] : false;
+  };
+
   PubSub.subscribe('cheatCodeEntered', function (cheat, allCheats, code) {
-    Cheats[code].unlocked = true;
+
+    CheatLogic.unlock(cheat.title);
+
     // Reset the input stream
     cheatInput = '';
   });
@@ -200,44 +229,70 @@
     lastButtonPush = now;
     cheatInput+= type;
 
-    // See if the input stream of cheats matches any cheats that are still locked
-    for (var cheatCode in Cheats) {
-      if (cheatInput.indexOf(cheatCode) != -1 && Cheats[cheatCode].unlocked === false) {
-        PubSub.publish('cheatCodeEntered', Cheats[cheatCode], getCheats(), cheatCode);
-      }
+    var cheat = CheatLogic.getCheatFromInput(cheatInput)
+
+    if (typeof cheat === 'object') {
+      PubSub.publish('cheatCodeEntered', cheat, 
+        CheatLogic.getCheats(), cheat.code.join(''));
     }
   });
 
 })(window, PubSub);
 
 /**
-* @module PowerUpIndicator
+* @module CheatRows
 */
-(function (exports, PubSub, UI) {
+(function (exports, PubSub, CheatLogic, UI) {
+  'use strict';
 
-  // TODO: Refactor make this more module-like
+  var cheatRowsWrapper = UI('#cheat-rows-wrapper'),
+      cheatRowTemp = UI('#temp-cheat-row');
 
-  PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
-    var indicator = UI('.power-up-indicator'),
-        textProp = ('textContent' in indicator) ? 'textContent' : 'innerText';
+  function isAvailable (cheat) {
+    return cheat.available === true;
+  }
 
-    var totalUnlocked = 0;
-    for (var code in allCheats) {
-      if (allCheats[code].unlocked === true) {
-        ++totalUnlocked;
-      }
-    }
+  function showAvailableCheats () {
+    var available = CheatLogic.getCheats().filter(isAvailable),
+        template = Handlebars.compile(cheatRowTemp.innerHTML),
+        html = template({cheats: available});
 
-    if (totalUnlocked > 0) {
-      indicator.classList.add('power-up-unlocked');
-    } else {
-      indicator.classList.remove('power-up-unlocked'); 
-    }
+    cheatRowsWrapper.innerHTML = html;
+  }
 
-    indicator[textProp] = totalUnlocked;
+  PubSub.subscribe('tabWillLoad', function (tab) {
+    showAvailableCheats();
   });
 
-})(window, PubSub, UI);
+})(window, PubSub, CheatLogic, UI);
+
+/**
+* @module PowerUpIndicator
+*/
+(function (exports, PubSub, UI, CheatLogic) {
+  'use strict';
+
+  var PowerUpIndicator = exports.PowerUpIndicator = {};
+
+  PowerUpIndicator.setCounter = function (totalUnlocked, domElem) {
+    domElem = domElem || UI('.power-up-indicator');
+    var textProp = ('textContent' in domElem) ? 'textContent' : 'innerText';
+
+    if (totalUnlocked > 0) {
+      domElem.classList.add('power-up-unlocked');
+    } else {
+      domElem.classList.remove('power-up-unlocked'); 
+    }
+
+    domElem[textProp] = totalUnlocked;
+  };
+
+  PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
+    var unlocked = CheatLogic.getTotalUnlocked();
+    PowerUpIndicator.setCounter(unlocked);
+  });
+
+})(window, PubSub, UI, CheatLogic);
 
 /** 
 * @module ButtonPressIndicator
@@ -326,8 +381,13 @@
       if (this.isValidTab(tabId)) {
         tab = UI(tabId);
       } else {
+        // Revert to controller, the default tab
+        tabId = '#controller';
         tab = UI('#controller');
       }
+
+      PubSub.publish('tabWillLoad', tabId.replace('#',''));
+
       this.getAllTabs().forEach(LayoutManager.hideTab);
       tab.classList.add('tab-active'); 
     }

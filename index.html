@@ -17,8 +17,32 @@
     <div class="clearfix"></div>
   </menu>
 
-  <section class="tab-section" id="power-ups">
-    <h1>Power-ups</h1>
+  <section class="tab-section container" id="power-ups">
+
+    <div class="row">
+      <div class="power-up-tile grid-3 unlocked">
+        <h2>Spice Attack</h2>
+        <p>Dinner at Revel at 555 Test St., WA.</p>
+      </div>
+
+      <div class="power-up-tile grid-3">
+        <h2>Spice Attack</h2>
+        <p>Dinner at Revel at 555 Test St., WA.</p>
+      </div>
+
+      <div class="power-up-tile grid-3">
+        <h2>Spice Attack</h2>
+        <p>Dinner at Revel at 555 Test St., WA.</p>
+      </div>
+
+      <div class="power-up-tile grid-3">
+        <h2>Spice Attack</h2>
+        <p>Dinner at Revel at 555 Test St., WA.</p>
+      </div>
+    </div>
+
+
+
   </section>
 
   <section class="tab-section" id="controller">
@@ -31,7 +55,7 @@
           <div class="side-bar">
             <div class="content-box primary">
               <h1>Control your birthday...</h1>
-              <p>Enter "cheat codes" to unlock "power-ups":
+              <p>Enter "cheat codes" to unlock "power-ups, which are
               real gifts and activities. A new cheat becomes
               available every hour.</p>
             </div>
@@ -42,32 +66,7 @@
                 <h2>Cheat Codes</h2>
               </div>
 
-              <div class="cheat-row">
-                <h2>Spice Attack</h2>
-                <div class="sprite button-triangle"></div>
-                <div class="sprite button-circle"></div>
-                <div class="sprite button-circle"></div>
-              </div>
-              <div class="cheat-row">
-                <h2>Swimming</h2>
-                <div class="sprite button-circle"></div>
-                <div class="sprite button-triangle"></div>
-                <div class="sprite button-circle"></div>
-                <div class="sprite button-circle"></div>
-              </div>
-              <div class="cheat-row">
-                <h2>Swimming</h2>
-                <div class="sprite button-circle"></div>
-                <div class="sprite button-triangle"></div>
-                <div class="sprite button-circle"></div>
-              </div>
-
-              <div class="cheat-row">
-                <h2>Swimming</h2>
-                <div class="sprite button-circle"></div>
-                <div class="sprite button-triangle"></div>
-                <div class="sprite button-circle"></div>
-              </div>
+              <div id="cheat-rows-wrapper"></div>
 
             </div>
           </div>
@@ -92,8 +91,6 @@
 
         </div>
       </div>
-
-
     </div>
     
   </section>
@@ -103,6 +100,19 @@
 
 </main>
 
+<script type="text/template" id="temp-cheat-row">
+{{#each cheats}}
+<div class="cheat-row">
+  <h2>{{title}}</h2>
+
+  {{#each code}}
+    <div class="sprite button-{{this}}"></div>
+  {{/each}}
+</div>
+{{/each}}
+</script>
+
+<script src="js/handlebars.js"></script>
 <script src="js/main.js"></script>
 
 </body>

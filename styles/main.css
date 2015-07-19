@@ -3,11 +3,63 @@
     src: url("playstation.ttf") /* TTF file for CSS3 browsers */
 }
 
-* {
-  padding: 0;
+/********************* Simple reset ******************/ 
+
+*, *:after, *:before {
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
+
+/********************* Grid ******************/
+
+.container {
+  width: 90%;
+  max-width: 2000px;
+  margin-top: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.row:after {
+  content: '';
+  display: table;
+  clear: both;
+} 
+
+[class*='grid-'] {
+  display: block;
+  float: left;
+  margin-right: 2%;
+  margin-bottom: 2%;
+}
+
+.grid-3 {
+  width: 23%;
+}
+
+.grid-4 {
+  width: 31.3333%;
+}
+
+.power-up-tile {
+  background: url(https://pixabay.com/static/uploads/photo/2013/04/01/09/02/read-only-98443_640.png) no-repeat;
+  background-size: contain;
+  height: 15em;
+  padding: 1em;
+}
+
+.power-up-tile h2, .power-up-tile p {
+  display: none;
+}
+
+.power-up-unlocked {
+
+}
+
+
 
 main {
   min-width: 750px;
