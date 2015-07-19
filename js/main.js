@@ -14,12 +14,16 @@
       },
       publish: function (eventName) {
         var args = [].slice.call(arguments);
+
         args.shift(); // Remove eventName
 
-        callbacks[eventName] = callbacks[eventName] || [];
-        callbacks[eventName].forEach(function (cb) {
-          cb.apply(undefined, args);
-        });
+        if (callbacks[eventName]) {
+          callbacks[eventName].forEach(function (cb) {
+            cb.apply(undefined, args);
+          });
+        } else {
+          console.warn("No modules are listening to the event '%s'", eventName);
+        }
       }
     };
   })();
@@ -161,71 +165,48 @@
   var pushFreq = 3000, 
       lastButtonPush;
 
+
+  var isAvailable = function () {
+    var current = new Date(),
+        itemDate = new Date(this.dateAvailable);
+        //diff = (now - itemDate) / 86400000; // Seconds in a day
+
+    var avail = Date.now() >= itemDate;
+    return avail;
+  };
+
   var Cheats = [
     {
       code: ["triangle","circle","circle"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Spice Attack",
+      unlocked: false,
+      dateAvailable: "July 19, 2015 12:51:00",
+      title: "TestA",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
     },
     {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
+      code: ["triangle","circle","circle"],
+      unlocked: false,
+      dateAvailable: "July 19, 2015 12:51:30",
+      title: "TestB",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      title: "Epic Sports",
-      description: "Testing"
+      description: "Dinner at Revel restaurant, WA"
     },
     {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Epicd Sports",
-      description: "Testing",
+      code: ["triangle","square","circle"],
+      unlocked: false,
+      dateAvailable: "July 18, 2015 23:51:45",
+      title: "TestC",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-    },
-    {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Epsic Sports",
-      description: "Testing",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-    },
-    {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Epiadc Sports",
-      description: "Testing",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-    },
-    {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Epicd Spdforts",
-      description: "Testing",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-    },
-    {
-      code: ["circle","circle","square"],
-      unlocked: false, 
-      available: true,
-      dateAvailable: "July 24, 2015 12:00:00",
-      title: "Epsic Spoddrts",
-      description: "Testing",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+      description: "Dinner at Revel restaurant, WA"
     }
   ];
+
+  // Add a helper method to all the cheat objects
+  Cheats = Cheats.map(function (cheat) {
+    cheat.isAvailable = isAvailable;
+    return cheat;
+  });
 
   CheatLogic.getTotalUnlocked = function () {
     return Cheats.filter(function (cheat) {
@@ -233,10 +214,22 @@
     }).length;
   };
 
+  CheatLogic.getNextAvailable = function () {
+    var next = Cheats.filter(function (cheat) {
+      return cheat.isAvailable() === false;
+    }).sort(function (a, b) {
+      var aTime = new Date(a.dateAvailable).getTime(),
+          bTime = new Date(b.dateAvailable).getTime();
+
+      return aTime > bTime;
+    });
+    return next[0];
+  };
+
   CheatLogic.getCheats = function () {
     return Cheats.map(function (cheat) {
       if (cheat.unlocked === false) {
-        cheat.description = 'Unlock this cheat to see its content';
+        cheat.description = 'Locked';
       }
       return cheat;
     });
@@ -252,16 +245,21 @@
   };
 
   CheatLogic.getCheatFromInput = function (inputStr) {
+
     var matchingCheats = Cheats.filter(function (cheat) {
+      // Find cheats that are available but haven't been unlocked
+      return cheat.isAvailable() && cheat.unlocked === false;
+
+      // Make sure the cheat code matches the input string
+    }).filter(function (cheat) {
       var codeStr = cheat.code.join('');
-      return (inputStr.indexOf(codeStr) != -1 && cheat.available === true && cheat.unlocked === false);
+      return inputStr.indexOf(codeStr) != -1;
     });
 
     return (matchingCheats.length > 0) ? matchingCheats[0] : false;
   };
 
   PubSub.subscribe('cheatCodeEntered', function (cheat, allCheats, code) {
-
     CheatLogic.unlock(cheat.title);
 
     // Reset the input stream
@@ -289,6 +287,20 @@
     }
   });
 
+  function broadcastNextCheat () {
+    var next = CheatLogic.getNextAvailable();
+    var date;
+
+    if (next) {
+      // Let the timer know a new cheat will become available
+      date = new Date(next.dateAvailable);
+      PubSub.publish('cheatWillBecomeAvailable', date);
+    }
+  }
+
+  PubSub.subscribe('tabRequested', broadcastNextCheat);
+  PubSub.subscribe('timerCompleted', broadcastNextCheat);
+
 })(window, PubSub);
 
 /**
@@ -300,23 +312,174 @@
   var cheatRowsWrapper = UI('#cheat-rows-wrapper'),
       cheatRowTemp = UI('#temp-cheat-row');
 
-  function isAvailable (cheat) {
-    return cheat.available === true;
-  }
-
   function showAvailableCheats () {
-    var available = CheatLogic.getCheats().filter(isAvailable),
-        template = Handlebars.compile(cheatRowTemp.innerHTML),
+    var available = CheatLogic.getCheats().filter(function (cheat) {
+      return cheat.isAvailable();
+    });
+
+    var template = Handlebars.compile(cheatRowTemp.innerHTML),
         html = template({cheats: available});
 
     cheatRowsWrapper.innerHTML = html;
   }
 
-  PubSub.subscribe('tabWillLoad', function (tab) {
-    showAvailableCheats();
-  });
+  PubSub.subscribe('tabWillLoad', showAvailableCheats);
+  PubSub.subscribe('timerCompleted', showAvailableCheats);
+  PubSub.subscribe('cheatWillBecomeAvailable', showAvailableCheats);
 
 })(window, PubSub, CheatLogic, UI);
+
+/**
+* @module Timer
+*/
+(function (exports, PubSub, UI) {
+
+  'use strict';
+
+  var timerElem = UI('.timer');
+
+  var timer = new Timer({
+    endDate: new Date(), 
+    updateFreq: 1000,
+    onUpdate: function (days, hours, minutes, seconds) {
+      var timeLeft = [hours, minutes, seconds].join(':');
+      timerElem.innerHTML = timeLeft;
+      document.title = timeLeft + " until next cheat";
+    },
+    onComplete: function () {
+      PubSub.publish('timerCompleted');
+    }
+  });
+
+  function Timer (props) {
+    var isCounting = false;
+    var _self = this;
+    var now = new Date();
+
+    this.endDate = props.endDate;
+    this.onUpdate = props.onUpdate || function () {}; 
+    this.updateFreq = props.updateFreq || 100;
+    this.onComplete = props.onComplete || function () {};
+
+    this.formatNumber = function (num) {
+      var numAsString = ('' + num); 
+      if (numAsString.length < 2) {
+        numAsString = '0' + numAsString; 
+      }
+      return numAsString;
+    };
+
+
+    this.timeDiff = function (dateStr1, dateStr2) {
+
+      // Second argument defaults to current date
+      dateStr2 = dateStr2 || new Date();
+
+      // For flexibility, allow date to be provided as a string or object
+      var date1 = (typeof dateStr1 === 'string') ? new Date(dateStr1) : dateStr1;
+      var date2 = (typeof dateStr2 === 'string') ? new Date(dateStr2) : dateStr2;
+      var msDiff, hour, minute, second;
+
+      if (date1 == 'Invalid Date' || date2 == 'Invalid Date') {
+        throw new Error('Invalid date(s)');
+      }
+
+      // Calculate time different in various increments
+      msDiff = date1.getTime() - date2.getTime();
+      hour = msDiff / 3600000;
+      minute = msDiff / 60000;
+      second = msDiff / 1000;
+
+      // For display purposes, if there's a large number of hours,
+      // minutes or seconds, cap the value. For example, it's not very
+      // helpful to see 100+ hours when dates are one week apart.
+      if (hour >= 12) {
+        hour = 24 - date2.getHours();
+      }
+      if (minute >= 60) {
+        minute = 60 - date2.getMinutes();
+      }
+      if (second >= 60) {
+        second = 60 - date2.getSeconds();
+      }
+
+      // Also for display purposes, don't allow the value to 
+      // drop below zero 
+      if (hour < 0) {
+        hour = 0;
+      }
+      if (minute < 0) {
+        minute = 0; 
+      }
+      if (second < 0) {
+        second = 0;
+      }
+
+      return {
+        hours: Math.floor(hour),
+        minutes: Math.floor(minute),
+        seconds: Math.floor(second)
+      };
+    }
+
+    function updateCycle () {
+      now = new Date();
+
+      if (!_self.endDate) {
+        return;
+      }
+
+      var diff = _self.timeDiff(_self.endDate);
+
+      if (diff.hours === 0 && diff.minutes === 0 && diff.seconds === 0) {
+        _self.stop();
+        _self.onComplete();
+        return false;
+      }
+
+      _self.onUpdate(
+        null,
+        _self.formatNumber(diff.hours),
+        _self.formatNumber(diff.minutes), 
+        _self.formatNumber(diff.seconds)
+      );
+
+      if (isCounting) {
+        window.setTimeout(updateCycle, _self.updateFreq);
+      }
+    }
+
+    this.stop = function () {
+      isCounting = false;
+    };
+
+    this.start = function () {
+      var diff; 
+
+      // Can't start the timer if it's already running
+      if (isCounting) {
+        return false;
+      }
+
+      isCounting = true; 
+      updateCycle();
+    };
+  }
+
+  PubSub.subscribe('godMode', function () {
+    timer.stop();
+
+    if (typeof timerElem === 'object' && 'innerHTML' in timerElem) {
+      timerElem.innerHTML = 'Infinity';
+    }
+  });
+
+  PubSub.subscribe('cheatWillBecomeAvailable', function (date) {
+    timer.endDate = date; 
+    timer.start();
+  });
+
+})(window, PubSub, UI);
 
 /**
 * @module PowerUpIndicator
@@ -342,6 +505,10 @@
   PubSub.subscribe('cheatCodeEntered', function (cheatEntered, allCheats) {
     var unlocked = CheatLogic.getTotalUnlocked();
     PowerUpIndicator.setCounter(unlocked);
+  });
+
+  PubSub.subscribe('godMode', function () {
+    PowerUpIndicator.setCounter(1000000);
   });
 
 })(window, PubSub, UI, CheatLogic);
@@ -478,6 +645,10 @@
 
 })(window, PubSub, UI);
 
+PubSub.subscribe('godMode', function () {
+  var h1 = UI('#primary-heading'),
+      textProp = ('textContent' in h1) ? 'textContent' : 'innerText';
 
-
+  h1[textProp] = 'Control the heavens...';
+});
 
