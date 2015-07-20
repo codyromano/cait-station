@@ -182,7 +182,7 @@
 
   // TODO: Should be part of sprite. Also, it should be smaller
   preloadImage({
-    image: 'https://pixabay.com/static/uploads/photo/2013/04/01/09/02/read-only-98443_640.png'
+    image: 'http://www.codyromano.com/qu/read-only-98443_640.png'
   });
 
   var Cheats = [
@@ -209,6 +209,22 @@
       title: "Super Smash",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
+    },
+    {
+      code: ["triangle","square","circle"],
+      unlocked: false,
+      dateAvailable: "July 20, 2015 17:00:00",
+      title: "Roundhouse Kick",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+      description: "An example of an activity that would go with this cheat."
+    },
+    {
+      code: ["triangle","square","circle"],
+      unlocked: false,
+      dateAvailable: "July 20, 2015 7:00:00",
+      title: "Karate Kick",
+      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
+      description: "An example of an activity that would go with this cheat."
     }
   ];
 
