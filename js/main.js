@@ -179,7 +179,7 @@
     {
       code: ["triangle","circle","circle"],
       unlocked: false,
-      dateAvailable: "July 19, 2015 12:51:00",
+      dateAvailable: "July 19, 2015 17:26:00",
       title: "TestA",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
@@ -187,7 +187,7 @@
     {
       code: ["triangle","circle","circle"],
       unlocked: false,
-      dateAvailable: "July 19, 2015 12:51:30",
+      dateAvailable: "July 19, 2015 17:26:30",
       title: "TestB",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
@@ -195,7 +195,7 @@
     {
       code: ["triangle","square","circle"],
       unlocked: false,
-      dateAvailable: "July 18, 2015 23:51:45",
+      dateAvailable: "July 19, 2015 17:26:45",
       title: "TestC",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
@@ -221,8 +221,13 @@
       var aTime = new Date(a.dateAvailable).getTime(),
           bTime = new Date(b.dateAvailable).getTime();
 
-      return aTime > bTime;
+      if (aTime === bTime) {
+        return 0;
+      }
+
+      return aTime > bTime ? 1 : -1;
     });
+    console.log(next);
     return next[0];
   };
 
@@ -337,17 +342,32 @@
   'use strict';
 
   var timerElem = UI('.timer');
+  var timerHeading = UI('.timer-heading');
 
-  var timer = new Timer({
+  var timer = exports.Timer = new Timer({
     endDate: new Date(), 
     updateFreq: 1000,
     onUpdate: function (days, hours, minutes, seconds) {
+
+      if (seconds === 60) {
+        seconds = 59;
+      }
+      if (minutes === 60) {
+        minutes = 59;
+      }
+
       var timeLeft = [hours, minutes, seconds].join(':');
+      var titleDisplay;
+
+      timerHeading.innerHTML = 'A new cheat will appear in...';
       timerElem.innerHTML = timeLeft;
-      document.title = timeLeft + " until next cheat";
+
+      document.title = [hours, minutes].join(':') + " until next cheat";
     },
     onComplete: function () {
       PubSub.publish('timerCompleted');
+      timerElem.innerHTML = '';
+      timerHeading.innerHTML = '';
     }
   });
 
@@ -369,6 +389,33 @@
       return numAsString;
     };
 
+    // Advance the timer by a given number of seconds, minutes or hours
+    // This is most useful for testing
+    this.advanceEndDate = function (value, unitType) {
+      var now = new Date();
+
+      if (['seconds','minutes','hours'].indexOf(unitType) === -1) {
+        throw new Error('Invalid unit type. Expecting seconds, minutes or hours.');
+      }
+
+      if (value < 0) {
+        throw new Error('The value by which you advance the end date must be positive.');
+      }
+
+      // Capitalize the string
+      unitType = unitType.charAt(0).toUpperCase() + unitType.slice(1);
+
+      var currentDateValue = now['get' + unitType]();
+      now['set' + unitType]( currentDateValue + value);
+
+      if (now == 'Invalid Date') {
+        throw new Error('The date associated with your request is invalid.');
+      }
+
+      this.endDate = now;
+      console.log('Adjusted date by %s %s. New date: %s', value, 
+        unitType, this.endDate.toString());
+    };
 
     this.timeDiff = function (dateStr1, dateStr2) {
 
@@ -431,18 +478,18 @@
 
       var diff = _self.timeDiff(_self.endDate);
 
-      if (diff.hours === 0 && diff.minutes === 0 && diff.seconds === 0) {
-        _self.stop();
-        _self.onComplete();
-        return false;
-      }
-
       _self.onUpdate(
         null,
         _self.formatNumber(diff.hours),
         _self.formatNumber(diff.minutes), 
         _self.formatNumber(diff.seconds)
       );
+
+      if (diff.hours === 0 && diff.minutes === 0 && diff.seconds === 0) {
+        _self.stop();
+        _self.onComplete();
+        return false;
+      }
 
       if (isCounting) {
         window.setTimeout(updateCycle, _self.updateFreq);
@@ -542,19 +589,29 @@
 (function (exports, PubSub, UI) {
   'use strict';
 
+  var rootElem = UI('#root');
+  var buttons = []; 
+
   exports.ButtonPressIndicator = function (rootElem, type) {
+    var _self = this;
     // Create a PlayStation-like button based on the sprite
-    var button = document.createElement('div');
-    button.className = 'controller-button sprite button-' + type;
-    rootElem.appendChild(button);
+    this.button = document.createElement('div');
+    this.button.className = 'controller-button sprite button-' + type;
+    rootElem.appendChild(this.button);
 
     window.setTimeout(function () {
-      rootElem.removeChild(button);
+      rootElem.removeChild(_self.button);
     }, 10000);
   };
 
+  PubSub.subscribe('tabWillLoad', function () {
+    buttons.forEach(function (buttonObj) {
+      buttonObj.button.style.display = 'none';
+    });
+  });
+
   PubSub.subscribe('controllerKeyPressed', function (type) {
-    new ButtonPressIndicator(UI('#root'), type);
+    buttons.push(new ButtonPressIndicator(rootElem, type));
   });
 
 })(window, PubSub, UI);
@@ -645,10 +702,30 @@
 
 })(window, PubSub, UI);
 
+PubSub.subscribe('ticTacToe', function () {
+  (function TicTacToe (limit, buttonType) {
+    var nextKey = buttonType === 'x' ? 'circle' : 'x';
+
+    (limit > 0 && PubSub.publish('controllerKeyPressed', nextKey))
+    limit--;
+    window.setTimeout(TicTacToe.bind(undefined, limit, nextKey), 250);
+  })(10);
+});
+
 PubSub.subscribe('godMode', function () {
   var h1 = UI('#primary-heading'),
       textProp = ('textContent' in h1) ? 'textContent' : 'innerText';
 
   h1[textProp] = 'Control the heavens...';
 });
+
+PubSub.subscribe('8bitMode', function () {
+  var iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube-nocookie.com/embed/wCkwb_rOg7M?rel=0&autoplay=1';
+  iframe.style.position = 'absolute';
+  iframe.style.top = '50%';
+  iframe.style.left = '50%';
+  document.querySelector('body').appendChild(iframe);
+});
+
 
