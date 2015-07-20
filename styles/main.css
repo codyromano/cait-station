@@ -57,7 +57,7 @@
 
 .power-up-tile.unlocked * {
   display: block;
-  background-color: rgba(255,255,255,.5);
+  background-color: rgba(255,255,255,.75);
   padding: .15em;
 }
 
@@ -474,4 +474,73 @@ p {
     -webkit-transform:  translate(-150px,0px)  scaleX(1.00) scaleY(1.00) ;
   }
 }
+
+/* TODO: Add Fastclick.js for better performance on mobile */
+@media (max-width: 800px) {
+
+  .power-up-indicator {
+    font-size: .75em;
+  }
+
+  body, html, main, .valign-wrapper {
+    height: auto;
+  }
+
+  *, .controller {
+    width: 100%;
+  }
+
+  main {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .timer-wrapper {
+    margin: 0px;
+    width: auto;
+  }
+
+  .valign-wrapper, .valign-content, .valign-inner {
+    display: block;
+  }
+
+  .valign-content {
+    vertical-align: top;
+  }
+
+  .valign-inner {
+    width: auto;
+  }
+
+  .top-menu {
+    width: 100%;
+  }
+
+  .top-menu a {
+    font-size: 1.75em;
+  }
+
+  .side-bar {
+    float: none;
+    width: 95%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .controller-wrapper, .controller {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .controller-wrapper {
+    left: -60%;
+    width: 155%;
+    float: none;
+    padding: 0;
+    text-align: left;
+    position: relative;
+  }
+}
+
+
 

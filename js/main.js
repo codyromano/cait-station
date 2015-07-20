@@ -175,28 +175,38 @@
     return avail;
   };
 
+  function preloadImage (cheatObj) {
+    var image = document.createElement('img');
+    image.src = cheatObj.image;
+  }
+
+  // TODO: Should be part of sprite. Also, it should be smaller
+  preloadImage({
+    image: 'https://pixabay.com/static/uploads/photo/2013/04/01/09/02/read-only-98443_640.png'
+  });
+
   var Cheats = [
     {
       code: ["triangle","circle","circle"],
       unlocked: false,
-      dateAvailable: "July 19, 2015 17:26:00",
-      title: "TestA",
+      dateAvailable: "July 20, 2015 9:00:00",
+      title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
     },
     {
       code: ["triangle","circle","circle"],
       unlocked: false,
-      dateAvailable: "July 19, 2015 17:26:30",
-      title: "TestB",
+      dateAvailable: "July 20, 2015 11:00:00",
+      title: "Double Punch",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
     },
     {
       code: ["triangle","square","circle"],
       unlocked: false,
-      dateAvailable: "July 19, 2015 17:26:45",
-      title: "TestC",
+      dateAvailable: "July 20, 2015 13:00:00",
+      title: "Super Smash",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel restaurant, WA"
     }
@@ -227,23 +237,18 @@
 
       return aTime > bTime ? 1 : -1;
     });
-    console.log(next);
     return next[0];
   };
 
   CheatLogic.getCheats = function () {
-    return Cheats.map(function (cheat) {
-      if (cheat.unlocked === false) {
-        cheat.description = 'Locked';
-      }
-      return cheat;
-    });
+    return Cheats;
   };
 
   CheatLogic.unlock = function (title) {
     Cheats = Cheats.map(function (c) {
       if (c.title === title) {
         c.unlocked = true;
+        preloadImage(c);
       }
       return c;
     });
