@@ -123,10 +123,10 @@
 
   var SoundLibrary = {
       'button-click' : {
-        mp3: 'audio/button-click.mp3'
+        mp3: 'http://www.codyromano.com/qu/button-click.mp3'
       },
       'cheat-entered' : {
-        mp3: 'audio/button-click-2.mp3'
+        mp3: 'http://www.codyromano.com/qu/button-click-2.mp3'
       }
   };
 
