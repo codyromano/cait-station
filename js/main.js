@@ -192,39 +192,15 @@
       dateAvailable: "July 20, 2015 9:00:00",
       title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "Dinner at Revel restaurant, WA"
-    },
-    {
-      code: ["triangle","circle","circle"],
-      unlocked: false,
-      dateAvailable: "July 20, 2015 11:00:00",
-      title: "Double Punch",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "Dinner at Revel restaurant, WA"
-    },
-    {
-      code: ["triangle","square","circle"],
-      unlocked: false,
-      dateAvailable: "July 20, 2015 13:00:00",
-      title: "Super Smash",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "Dinner at Revel restaurant, WA"
-    },
-    {
-      code: ["triangle","square","circle"],
-      unlocked: false,
-      dateAvailable: "July 20, 2015 17:00:00",
-      title: "Roundhouse Kick",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "An example of an activity that would go with this cheat."
+      description: "Dinner plans at Revel, a Thai restaurant in Capitol Hill"
     },
     {
       code: ["triangle","square","circle"],
       unlocked: false,
       dateAvailable: "July 20, 2015 7:00:00",
-      title: "Karate Kick",
-      image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "An example of an activity that would go with this cheat."
+      title: "Machine Power",
+      image: "http://www.ps4home.com/wp-content/uploads/2015/02/Ps4-SOE.jpg",
+      description: "Your actual present is a PS4 - hence the whole Playstation theme!"
     }
   ];
 
