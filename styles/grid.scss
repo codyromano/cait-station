@@ -1,0 +1,28 @@
+.container {
+  width: 90%;
+  max-width: 2000px;
+  margin-top: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.row:after {
+  content: '';
+  display: table;
+  clear: both;
+} 
+
+[class*='grid-'] {
+  display: block;
+  float: left;
+  margin-right: 2%;
+  margin-bottom: 2%;
+}
+
+.grid-3 {
+  width: 23%;
+}
+
+.grid-4 {
+  width: 31.3333%;
+}

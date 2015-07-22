@@ -1,0 +1,51 @@
+.power-up-tile {
+  background: url(http://www.codyromano.com/qu/read-only-98443_640.png) no-repeat;
+  background-size: contain;
+  height: 15em;
+  padding: 1em 2em;
+}
+
+.power-up-tile h2, .power-up-tile p {
+  display: none;
+}
+
+.power-up-tile.unlocked * {
+  display: block;
+  background-color: rgba(255,255,255,.75);
+  padding: .15em;
+}
+
+.power-up-indicator {
+  border-radius: 50%;
+  width: 1.5em;
+
+  transition: all ease-in .5s;
+  position: relative;
+  left: -.5em;
+  border: solid #ccc .1em;
+  color: #ccc;
+  padding: .15em .6em;
+  opacity: 1;
+}
+
+@-webkit-keyframes pulse_animation {
+  0% { -webkit-transform: scale(1); }
+  5% { -webkit-transform: scale(1.5);}
+  10% { -webkit-transform: scale(1); }
+  15% { -webkit-transform: scale(1.5); }
+  20% { -webkit-transform: scale(1); }
+  25% { -webkit-transform: scale(1.5); }
+  30% { -webkit-transform: scale(1); }
+  100% { -webkit-transform: scale(1); }
+}
+
+.power-up-unlocked {
+  background-color: #fff;
+  border-color: #111;
+  color: #000;
+  -webkit-animation-name: 'pulse_animation';
+  -webkit-animation-duration: 10000ms;
+  -webkit-transform-origin:70% 70%;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-timing-function: ease;
+}

@@ -188,19 +188,43 @@
   var Cheats = [
     {
       code: ["triangle","circle","circle"],
-      unlocked: false,
-      dateAvailable: "July 20, 2015 9:00:00",
+      unlocked: false, 
+      dateAvailable: "July 20, 2015 17:00:00", // past date for testing
       title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner plans at Revel, a Thai restaurant in Capitol Hill"
     },
     {
+      code: ["square","triangle","triangle","circle"],
+      unlocked: false, 
+      dateAvailable: "July 24, 2015 18:00:00",
+      title: "Barrel Roll",
+      image: "http://bthief.com/images/about/barrel-thief-lounge.jpg",
+      description: "Drink at Barrel Thief wine and whisky bar near Revel"
+    },
+    {
+      code: ["square", "square", "triangle", "triangle"],
+      unlocked: false,
+      dateAvailable: "July 24, 2015 20:00:00",
+      title: "Old School Smash",
+      image: "https://c1.staticflickr.com/7/6067/6055465676_4920f71696_b.jpg",
+      description: "80s vs. 90s DJ party at Nectar Lounge, near Barrel Thief, starting at 9p.m."
+    },
+    {
+      code: ["square","x","triangle","circle"],
+      unlocked: false,
+      dateAvailable: "July 25, 2015 10:45:00",
+      title: "Gamer Paradise",
+      image: "http://indiegames.com/icarus.png",
+      description: "Go to EMP Museum for an Indie Games exhibit. 40+ playable games, sponsored by Nintendo."
+    },
+    {
       code: ["triangle","square","circle"],
       unlocked: false,
-      dateAvailable: "July 20, 2015 7:00:00",
-      title: "Machine Power",
+      dateAvailable: "July 28, 2015 4:00:00",
+      title: "Unleash Final Boss",
       image: "http://www.ps4home.com/wp-content/uploads/2015/02/Ps4-SOE.jpg",
-      description: "Your actual present is a PS4 - hence the whole Playstation theme!"
+      description: "Here's your actual present -- hence the whole PlayStation theme!"
     }
   ];
 
@@ -266,6 +290,34 @@
 
     // Reset the input stream
     cheatInput = '';
+  });
+
+  /**
+  * Quickly demo the app by specifying a time after which
+  * all items should become unlocked. 
+  */
+  PubSub.subscribe('simulationWillStart', function (secondsPerCheat) {
+
+    secondsPerCheat = secondsPerCheat || 10;
+
+    // Reset all cheats to unlocked status 
+    Cheats = Cheats.map(function (cheat) {
+      cheat.unlocked = false; 
+      return cheat;
+    });
+
+    // Show the subsequent cheats at a defined interval of seconds
+    Cheats = Cheats.map(function (cheat, index) {
+      var date = new Date(),
+          currentSeconds = date.getSeconds(),
+          offset = secondsPerCheat + (secondsPerCheat * index);
+
+        date.setSeconds(currentSeconds + offset);
+        cheat.dateAvailable = date;
+        return cheat;
+    });
+
+    broadcastNextCheat();
   });
 
   PubSub.subscribe('controllerKeyPressed', function (type) {
@@ -434,12 +486,6 @@
       minute = msDiff / 60000;
       second = msDiff / 1000;
 
-      // For display purposes, if there's a large number of hours,
-      // minutes or seconds, cap the value. For example, it's not very
-      // helpful to see 100+ hours when dates are one week apart.
-      if (hour >= 12) {
-        hour = 24 - date2.getHours();
-      }
       if (minute >= 60) {
         minute = 60 - date2.getMinutes();
       }
@@ -627,6 +673,10 @@
       var validTabs = ['controller','power-ups'];
       var tabId = Router.getCurrentHash();
 
+      if (tabId === "simulationWillStart") {
+        PubSub.publish('simulationWillStart', 10);
+      }
+
       // Fall back to default tab if hash is missing or invalid
       if (validTabs.indexOf(tabId) === -1) {
         tabId = 'controller';
@@ -724,5 +774,9 @@ PubSub.subscribe('8bitMode', function () {
   iframe.style.left = '50%';
   document.querySelector('body').appendChild(iframe);
 });
+
+// Testing
+PubSub.publish('simulationWillStart', 15);
+
 
 

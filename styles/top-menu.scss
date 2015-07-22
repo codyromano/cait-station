@@ -1,0 +1,43 @@
+.top-menu {
+  background-image: radial-gradient(ellipse farthest-corner at 200px 0px , #000 0%, rgba(0, 0, 0, 0) 0%, #333 50%);
+}
+
+.top-menu .power-up-text, .top-menu .power-up-indicator {
+  opacity: .5;
+}
+.top-menu a.selected .power-up-text {
+  opacity: 1;
+}
+
+.top-menu .power-up-unlocked {
+  opacity: 1;
+}
+
+.top-menu > a {
+  color: #ccc;
+  font-family: Playstation;
+  font-size: 2.25em;
+  cursor: pointer;
+  width: 33.333%;
+  width: 50%;
+  display: block;
+  float: left;
+  text-align: center;
+  padding: .5em 0;
+
+  border-bottom: solid #000 15px;
+  border-right: solid #000 1px;
+  transition: all ease .15s;
+  -webkit-transition: all ease .15s;
+  -moz-transition: all ease .15s;
+}
+
+.top-menu a:hover {
+  background-color: rgba(88,88,88,.2);
+}
+
+.top-menu a.selected {
+  color: #fff;
+  opacity: 1;
+  background-image: radial-gradient(ellipse farthest-corner at 200px 0px , #000 0%, rgba(0, 0, 0, 0) 0%, #666 95%);
+}
