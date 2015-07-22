@@ -192,8 +192,16 @@
       dateAvailable: "July 20, 2015 17:00:00", // past date for testing
       title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "Dinner plans at Revel, a Thai restaurant in Capitol Hill"
+      description: "Dinner at Revel, a Thai restaurant on Capitol Hill"
     },
+{
+code: ["square","triangle","triangle","x"],
+unlocked: false,
+dateAvailable: "July 20, 2015 6:59:00",
+title: "Super Sam",
+image: "http://www.fodors.com/wire/Olympic-Sculpture-Park.jpg",
+description: "Lunch at the Olympic Sculpture Park for Summer at SAM event."
+},
     {
       code: ["square","triangle","triangle","circle"],
       unlocked: false, 
