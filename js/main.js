@@ -682,7 +682,9 @@
 
   PubSub.subscribe('cheatWillBecomeAvailable', function (date) {
     timer.endDate = date; 
-    timer.start();
+    window.setTimeout(function () {
+      timer.start();
+    }, 2000);
   });
 
 })(window, PubSub, UI);
