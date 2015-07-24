@@ -325,11 +325,6 @@
     return (matchingCheats.length > 0) ? matchingCheats[0] : false;
   };
 
-  // Testing
-  Cheats.forEach(function (cheat) {
-    CheatLogic.unlock(cheat.title);
-  });
-
   PubSub.subscribe('cheatCodeEntered', function (cheat, allCheats, code) {
     CheatLogic.unlock(cheat.title);
 
