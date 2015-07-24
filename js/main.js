@@ -187,21 +187,29 @@
 
   var Cheats = [
     {
+      code: ["x","x","triangle"], 
+      unlocked: false,
+      dateAvailable: "July 24, 2015 8:00:00", 
+      title: "Animal Attack",
+      image: "http://static1.squarespace.com/static/52f25a8de4b06151dc720971/t/52f2eb4ce4b052b2dabe3802/1391651663268/Bedlam1.jpg",
+      description: "You unlocked an Animal Cracker Latte from Bedlam coffee."
+    },
+    {
+      code: ["square","triangle","x"],
+      unlocked: false,
+      dateAvailable: "July 24, 2015 11:00:00",
+      title: "Super Sam",
+      image: "http://www.fodors.com/wire/Olympic-Sculpture-Park.jpg",
+      description: "Bring takeout to the Olympic Sculpture Park for Summer at SAM event."
+    },
+    {
       code: ["triangle","circle","circle"],
       unlocked: false, 
-      dateAvailable: "July 20, 2015 17:00:00", // past date for testing
+      dateAvailable: "July 24, 2015 16:00:00", // past date for testing
       title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
-      description: "Dinner at Revel, a Thai restaurant on Capitol Hill"
+      description: "Dinner at Revel, a Thai restaurant"
     },
-{
-code: ["square","triangle","triangle","x"],
-unlocked: false,
-dateAvailable: "July 20, 2015 6:59:00",
-title: "Super Sam",
-image: "http://www.fodors.com/wire/Olympic-Sculpture-Park.jpg",
-description: "Lunch at the Olympic Sculpture Park for Summer at SAM event."
-},
     {
       code: ["square","triangle","triangle","circle"],
       unlocked: false, 
@@ -219,20 +227,44 @@ description: "Lunch at the Olympic Sculpture Park for Summer at SAM event."
       description: "80s vs. 90s DJ party at Nectar Lounge, near Barrel Thief, starting at 9p.m."
     },
     {
+      code: ["x","x","x"], 
+      unlocked: false,
+      dateAvailable: "July 25, 2015 9:00:00", 
+      title: "Quick Steppin",
+      image: "http://hotnewslatest.com/wp-content/uploads/2013/10/Fitbit_Force_35828458_19.jpg",
+      description: "Get 20,000 FitBit steps today to unlock a special reward."
+    },
+    {
       code: ["square","x","triangle","circle"],
       unlocked: false,
-      dateAvailable: "July 25, 2015 10:45:00",
+      dateAvailable: "July 25, 2015 10:00:00",
       title: "Gamer Paradise",
       image: "http://indiegames.com/icarus.png",
       description: "Go to EMP Museum for an Indie Games exhibit. 40+ playable games, sponsored by Nintendo."
     },
     {
+      code: ["square", "triangle", "triangle", "triangle"], 
+      unlocked: false,
+      dateAvailable: "July 25, 2015 11:30:00", 
+      title: "Roundhouse Kick", 
+      image: "http://ww1.hdnux.com/photos/32/53/51/6994556/3/960x540.jpg",
+      description: "More like..roundhouse wheel! Rent Pronto bikes at Myrtle park"
+    },
+    {
+      code: ["triangle","triangle","triangle"], 
+      unlocked: false,
+      dateAvailable: "July 25, 2015 12:30:00", 
+      title: "Slow Time", 
+      image: "http://media-cdn.tripadvisor.com/media/photo-s/02/9c/81/a7/fall.jpg",
+      description: "Meditation slows time, right? Meditate near a tree at at WA Park Arboretum!"
+    },
+    {
       code: ["triangle","square","circle"],
       unlocked: false,
-      dateAvailable: "July 28, 2015 4:00:00",
+      dateAvailable: "July 26, 2015 10:00:00",
       title: "Unleash Final Boss",
-      image: "http://www.ps4home.com/wp-content/uploads/2015/02/Ps4-SOE.jpg",
-      description: "Here's your actual present -- hence the whole PlayStation theme!"
+      image: "http://assets.inhabitat.com/files/present.jpg",
+      description: "Time to open your actual present!"
     }
   ];
 
@@ -292,6 +324,11 @@ description: "Lunch at the Olympic Sculpture Park for Summer at SAM event."
 
     return (matchingCheats.length > 0) ? matchingCheats[0] : false;
   };
+
+  // Testing
+  Cheats.forEach(function (cheat) {
+    CheatLogic.unlock(cheat.title);
+  });
 
   PubSub.subscribe('cheatCodeEntered', function (cheat, allCheats, code) {
     CheatLogic.unlock(cheat.title);
@@ -782,9 +819,3 @@ PubSub.subscribe('8bitMode', function () {
   iframe.style.left = '50%';
   document.querySelector('body').appendChild(iframe);
 });
-
-// Testing
-PubSub.publish('simulationWillStart', 15);
-
-
-
