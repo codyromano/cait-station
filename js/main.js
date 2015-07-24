@@ -30,6 +30,28 @@
 
 })(window);
 
+(function (exports) {
+  'use strict';
+
+  exports.rateLimit = function (fn, threshold) {
+    // Time at which the function was last called
+    var lastCall; 
+
+    return function () {
+      var now = new Date().getTime();
+
+      if (!isNaN(lastCall) && now - lastCall < threshold) {
+        // Not enough time has passed
+        return false;
+      }
+
+      lastCall = now; 
+      return fn.apply(fn, arguments);
+    };
+  }
+
+})(window);
+
 /**
 * @module UI
 */
@@ -153,7 +175,7 @@
 /**
 * @module CheatLogic
 */
-(function (exports, PubSub) {
+(function (exports, PubSub, rateLimit) {
 
   var CheatLogic = exports.CheatLogic = {};
 
@@ -185,14 +207,32 @@
     image: 'http://www.codyromano.com/qu/read-only-98443_640.png'
   });
 
+  // TODO: Move this into a standalone JSON file
   var Cheats = [
     {
       code: ["x","x","triangle"], 
       unlocked: false,
-      dateAvailable: "July 24, 2015 8:00:00", 
+      dateAvailable: "July 23, 2015 08:00:00", 
       title: "Animal Attack",
       image: "http://static1.squarespace.com/static/52f25a8de4b06151dc720971/t/52f2eb4ce4b052b2dabe3802/1391651663268/Bedlam1.jpg",
       description: "You unlocked an Animal Cracker Latte from Bedlam coffee."
+    },
+    {
+      code: ["square","square"],
+      unlocked: false,
+      dateAvailable: "July 24 2015 09:30:00", 
+      title: "Star Strike",
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Apple_pie.jpg",
+      description: "Share a piece of pie while watching a movie - any movie - in which famous people eat pie. Bonus points " +
+        "if you get a photo of yourself immitating the celebrity."
+    },
+    {
+      code: ["triangle","triangle"],
+      unlocked: false, 
+      dateAvailable: "July 24, 2015 10:15:00", 
+      title: "Goal Booster",
+      image: "http://www.leprogres.net/media/photos/unis/2014/07/12/photo_2669047/article_large.jpg",
+      description: "Decide on a specific date to visit Foresta Lumina between now and September."
     },
     {
       code: ["square","triangle","x"],
@@ -200,12 +240,37 @@
       dateAvailable: "July 24, 2015 11:00:00",
       title: "Super Sam",
       image: "http://www.fodors.com/wire/Olympic-Sculpture-Park.jpg",
-      description: "Bring takeout to the Olympic Sculpture Park for Summer at SAM event."
+      description: "Bring takeout to the Olympic Sculpture Park for Summer at SAM event"
+    },
+    {
+      code: ["square","square","x"], 
+      unlocked: false,
+      dateAvailable: "July 24, 2015 13:00:00",
+      title: "Tank Heist",
+      image: "http://media.gamerevolution.com/images/galleries/1055/5_grand_theft_auto_san_andreas.jpg",
+      description: "Steal a helicopter from a military base in GTA: San Andreas (2-player)"
+    },
+    {
+      code: ["square","x"],
+      unlocked: false,
+      dateAvailable: "July 24, 2015 14:00:00",
+      title: "Four Legs",
+      image: "http://dogbreedsinfo.org/images/Canaan_Dog.jpg",
+      description: "Devise a way to let Fawn choose her own dog park by eating treats (or, for a bonus, bacon)."
+    },
+    {
+      code: ["triangle", "triangle"],
+      unlocked: false,
+      dateAvailable: "July 24, 2015 15:00:00",
+      title: "Hardcore Tea",
+      image: "http://www.adweek.com/tvnewser/wp-content/uploads/sites/3/2015/06/DONALD-TRUMP.jpg",
+      description: "Play the world's first tea drinking game. Watch a Donald Trump speech and take a sip whenever " +
+      "he says something insensitive."
     },
     {
       code: ["triangle","circle","circle"],
       unlocked: false, 
-      dateAvailable: "July 24, 2015 16:00:00", // past date for testing
+      dateAvailable: "July 24, 2015 16:00:00",
       title: "Spice Attack",
       image: "https://cdn2.vox-cdn.com/uploads/chorus_image/image/46057904/upload.0.0.0.jpg",
       description: "Dinner at Revel, a Thai restaurant"
@@ -259,9 +324,17 @@
       description: "Meditation slows time, right? Meditate near a tree at at WA Park Arboretum!"
     },
     {
+      code: ["x","triangle","x"],
+      unlocked: false,
+      dateAvailable: "July 26, 2015 8:30:00",
+      title: "Dragon Boating",
+      image: "http://photos4.meetupstatic.com/photos/event/8/7/f/c/600_411274812.jpeg",
+      description: "Start the year off right by achieving one of your goals!"
+    },
+    {
       code: ["triangle","square","circle"],
       unlocked: false,
-      dateAvailable: "July 26, 2015 10:00:00",
+      dateAvailable: "July 26, 2015 10:30:00",
       title: "Unleash Final Boss",
       image: "http://assets.inhabitat.com/files/present.jpg",
       description: "Time to open your actual present!"
@@ -385,26 +458,30 @@
     var next = CheatLogic.getNextAvailable();
     var date;
 
-    if (next) {
-      // Let the timer know a new cheat will become available
-      date = new Date(next.dateAvailable);
-      PubSub.publish('cheatWillBecomeAvailable', date);
+    if (typeof next !== 'object') {
+      return false;
     }
+    if ((date = new Date(next.dateAvailable)) == 'Invalid Date') {
+      return false;
+    }
+
+    PubSub.publish('cheatWillBecomeAvailable', date);
   }
 
   PubSub.subscribe('tabRequested', broadcastNextCheat);
   PubSub.subscribe('timerCompleted', broadcastNextCheat);
 
-})(window, PubSub);
+})(window, PubSub, rateLimit);
 
 /**
 * @module CheatRows
 */
-(function (exports, PubSub, CheatLogic, UI) {
+(function (exports, PubSub, CheatLogic, UI, rateLimit) {
   'use strict';
 
   var cheatRowsWrapper = UI('#cheat-rows-wrapper'),
-      cheatRowTemp = UI('#temp-cheat-row');
+      cheatRowTemp = UI('#temp-cheat-row'),
+      showCheats = rateLimit(showAvailableCheats, 2000);
 
   function showAvailableCheats () {
     var available = CheatLogic.getCheats().filter(function (cheat) {
@@ -417,17 +494,16 @@
     cheatRowsWrapper.innerHTML = html;
   }
 
-  PubSub.subscribe('tabWillLoad', showAvailableCheats);
-  PubSub.subscribe('timerCompleted', showAvailableCheats);
-  PubSub.subscribe('cheatWillBecomeAvailable', showAvailableCheats);
+  PubSub.subscribe('tabWillLoad', showCheats);
+  PubSub.subscribe('timerCompleted', showCheats);
+  PubSub.subscribe('cheatWillBecomeAvailable', showCheats);
 
-})(window, PubSub, CheatLogic, UI);
+})(window, PubSub, CheatLogic, UI, rateLimit);
 
 /**
 * @module Timer
 */
 (function (exports, PubSub, UI) {
-
   'use strict';
 
   var timerElem = UI('.timer');
@@ -646,11 +722,12 @@
 /**
 * @Module PowerUpTile 
 */
-(function (exports, PubSub, UI, CheatLogic) {
+(function (exports, PubSub, UI, CheatLogic, rateLimit) {
 
   // DOM element containing all power-up tiles
   var tiles = UI("#power-up-tile-wrapper"),
       temp = UI("#temp-power-up-row");
+  var showPowerups = rateLimit(showAvailablePowerups, 1000);
 
   function showAvailablePowerups () {
     var template = Handlebars.compile(temp.innerHTML),
@@ -660,11 +737,11 @@
 
   PubSub.subscribe('tabWillLoad', function (tab) {
     if (tab === 'power-ups') {
-      showAvailablePowerups();
+      showPowerups();
     }
   });
 
-})(window, PubSub, UI, CheatLogic);
+})(window, PubSub, UI, CheatLogic, rateLimit);
 
 /** 
 * @module ButtonPressIndicator
