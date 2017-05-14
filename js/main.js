@@ -341,6 +341,11 @@
     }
   ];
 
+  Cheats = Cheats.map(cheat => {
+    cheat.id = cheat.code.join('-');
+    return cheat;
+  });
+
   // Add a helper method to all the cheat objects
   Cheats = Cheats.map(function (cheat) {
     cheat.isAvailable = isAvailable;
@@ -378,6 +383,9 @@
       if (c.title === title) {
         c.unlocked = true;
         preloadImage(c);
+
+        const cheatId = c.code.join('-');
+        PubSub.publish('cheatCodeUnlocked', cheatId);
       }
       return c;
     });
@@ -431,6 +439,15 @@
     });
 
     broadcastNextCheat();
+  });
+
+  PubSub.subscribe('cheatCodeUnlocked', id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.remove();
+    } else {
+      console.error(`Cannot find cheat row with ID ${id}`);
+    }
   });
 
   PubSub.subscribe('controllerKeyPressed', function (type) {
