@@ -103,7 +103,8 @@
 <script type="text/template" id="temp-power-up-row">
 {{#each cheats}}
   {{#if unlocked}}
-    <div class="power-up-tile unlocked grid-3" style="background-image:url({{image}});background-size:cover;">
+    <div class="power-up-tile unlocked grid-3">
+      <div class="tile-bg" style="background-image:url({{image}});background-size:cover;"></div>
   {{else}}
     <div class="power-up-tile grid-3">
   {{/if}}

@@ -74,23 +74,33 @@ ol {
   background-image: radial-gradient(ellipse farthest-corner at 200px 0px, #000 0%, transparent 0%, #666 95%); }
 
 .power-up-tile {
+  position: relative;
   background: url(http://www.codyromano.com/qu/read-only-98443_640.png) no-repeat;
   background-size: contain;
   height: 15em;
-  padding: 1em 2em; }
+  padding: 1em 2em;
+  border: solid #555 0.1rem;
+  color: #fff; }
+
+.tile-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all ease 0.5s;
+  z-index: 1; }
 
 .power-up-tile h2, .power-up-tile p {
-  display: none; }
-
-.power-up-tile.unlocked * {
-  display: block;
-  background-color: rgba(255, 255, 255, 0.75);
-  padding: .15em; }
+  transition: all ease 0.5s;
+  opacity: 0;
+  position: relative;
+  z-index: 2; }
 
 .power-up-indicator {
   border-radius: 50%;
   width: 1.5em;
-  transition: all ease-in .5s;
+  transition: all ease 0.5s;
   position: relative;
   left: -.5em;
   border: solid #ccc .1em;
@@ -124,6 +134,14 @@ ol {
   -webkit-transform-origin: 70% 70%;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-timing-function: ease; }
+
+.power-up-tile.unlocked {
+  background-color: #222; }
+
+.power-up-tile.unlocked:hover h2, .power-up-tile.unlocked:hover p {
+  opacity: 1; }
+.power-up-tile.unlocked:hover .tile-bg {
+  opacity: 0; }
 
 .controller {
   position: relative;
